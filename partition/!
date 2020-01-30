@@ -1,0 +1,78 @@
+#!/usr/bin/python3
+import os
+cwd = '/home/projects/vaccine/people/s143849/alternative_script/'
+os.chdir(cwd)
+import sys
+sys.path.append(cwd)
+import time
+start_time = time.time()
+print('start importing')
+from my_func_computerome import *
+print(round(time.time()-start_time,3),'s to import my_func')
+import pandas as pd
+from IPython.display import display, HTML
+import numpy as np
+import matplotlib.pyplot as plt
+from Bio import SeqIO
+import copy
+import collections
+import json
+
+folder = "/home/projects/vaccine/people/s143849/"
+data_folder = 'alternative_data/'
+birkir_folder = 'birkir/'
+partition_folder = 's_partition/'
+nnalign_folder = 's_nnalign/'
+extract_top_folder = 's_extract_top/'
+input_folder = 'input/'
+output_folder = 'output/'
+single_allele_folder = 'single_allele/'
+cell_line_folder = 'cell_line/'
+random_folder = 'random/'
+mean_folder = 'mean/'
+jupyter_folder = 'jupyter/'
+filter_folder = 's_filter/'
+
+partition_filename = 'cl_input_partition.ft'
+partition_9mer_filename = 'cl_input_partition_9mer.ft'
+peptide_filename = 'cl_input_acc.csv'
+
+filename_peptide = folder+data_folder+jupyter_folder+filter_folder+peptide_filename
+print(os.path.exists(filename_peptide),filename_peptide)
+filename_partition = folder+data_folder+partition_folder+partition_filename
+print(os.path.exists(os.path.dirname(filename_partition)),os.path.dirname(filename_partition))
+filename_partition_9mer = folder+data_folder+partition_folder+partition_9mer_filename
+print(os.path.exists(os.path.dirname(filename_partition_9mer)),os.path.dirname(filename_partition_9mer))
+
+filename_train = ['train_EL','train_BA']
+for c,filename in enumerate(filename_train):
+    filename_train[c] = folder+data_folder+birkir_folder+filename
+    print(os.path.exists(os.path.dirname(filename_train[c])),os.path.dirname(filename_train[c]))
+
+df_peptides = pd.read_csv(peptide_filename,sep='\t',header=None)
+df_peptides.columns = ['acc','from_start','to_end','Peptide','affinity','MHC_mol','Context']
+
+df_partition = add_partition(df_peptides,filename_partition)
+
+print('in all',df_partition[df_partition[['train_1','train_2','train_3','train_4','train_5']].sum(axis=1)==5]['Peptide'].unique())
+
+print(filename_partition)
+write_df_feather(filename_partition,df_partition)
+
+df_partition = find_9mer(df_partition)
+
+print(filename_partition_9mer)
+write_df_feather(filename_partition_9mer,df_partition)
+
+
+
+
+
+
+
+
+
+
+
+
+
